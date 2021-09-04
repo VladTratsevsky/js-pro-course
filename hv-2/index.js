@@ -12,9 +12,9 @@ promise.then((value) => {
 });
 
 /*2
-Сделайте промис, внутри которого будет setTimeout в 3 секунды, после которой промис должен зареджектится (то есть выполнится с ошибкой).\*/
+Сделайте промис, внутри которого будет setTimeout в 3 секунды, после которой промис должен зареджектится (то есть выполнится с ошибкой).*/
 
-let promise = new Promise((resolve, reject) => {
+let promise1 = new Promise((resolve, reject) => {
   setTimeout(reject("ok"), 3000);
 });
 
@@ -50,12 +50,78 @@ let inquiry = fetch("https://jsonplaceholder.typicode.com/users")
   .then((result) => filterId(result));
 
 /*5
-Сделать запрос при помощи fetch на адрес https://jsonplaceholder.typicode.com/users, вывести список карточек пользователей, отобразить имя, телефон и остальную информацию каждого пользователя. Вывести в html внутри div с id = 1
+Сделать запрос при помощи fetch на адрес https://jsonplaceholder.typicode.com/users, вывести список карточек пользователей, отобразить имя, телефон и остальную информацию каждого пользователя. Вывести в html внутри div */
 
-6
-Сделать запрос при помощи fetch на адрес https://jsonplaceholder.typicode.com/users/${userId}/todos, userId получить при помощи prompt. Вывести todo list пользователя, отобразить текст тудушки и индикатор выполнена она или нет (чекбокс). Вывести в html внутри div с id = 2
+async function getUsersData() {
+  const res = await fetch("https://jsonplaceholder.typicode.com/users");
+  const result = await res.json();
+  result.forEach((i) => displayUsersCard(i));
+}
 
-7
+function displayUsersCard(object) {
+  let card = `
+    <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+        <div class="card-header">${object.name}</div>
+        <div class="card-body">
+          <h5 class="card-title">Email: ${object.email}</h5>
+          <p class="card-text">Phone: ${object.phone}</p>
+        </div>
+      </div>    `;
+  let cardDiv = document.createElement("div");
+  cardDiv.innerHTML = card;
+  document.body.append(cardDiv);
+}
+
+getUsersData();
+
+/*6
+Сделать запрос при помощи fetch на адрес https://jsonplaceholder.typicode.com/users/${userId}/todos, userId получить при помощи prompt. Вывести todo list пользователя, отобразить текст тудушки и индикатор выполнена она или нет (чекбокс). Вывести в html внутри div с id = 2*/
+
+async function getUsersData() {
+  let userId = +prompt("введите id пользователя");
+  const res = await fetch(
+    `https://jsonplaceholder.typicode.com/users/${userId}/todos`
+  );
+  const result = await res.json();
+  result.forEach((i) => createToodoo(i));
+  console.log(result);
+}
+
+function createToodoo(object) {
+  let card = "";
+  if (object.completed === true) {
+    card = `
+    <div class="card w-75">
+  <div class="card-body">
+    <h5 class="card-title">${object.userId}</h5>
+    <p class="card-text">${object.title}</p>
+    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+  <label class="form-check-label" for="flexCheckChecked">
+    Completed
+  </label>
+  </div>
+</div>`;
+  } else {
+    card = `
+    <div class="card w-75">
+  <div class="card-body">
+    <h5 class="card-title">${object.userId}</h5>
+    <p class="card-text">${object.title}.</p>
+    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
+  <label class="form-check-label" for="flexCheckChecked">
+    Completed
+  </label>
+  </div>
+</div>`;
+  }
+  let cardDiv = document.createElement("div");
+  cardDiv.innerHTML = card;
+  document.body.append(cardDiv);
+}
+
+getUsersData();
+
+/*7
 Сделать запрос при помощи fetch на адрес https://jsonplaceholder.typicode.com/albums/1/photos, вывести фотографии, используя тег img. В качестве src для img использовать поле url в объекте фото
 
 {
@@ -66,3 +132,29 @@ let inquiry = fetch("https://jsonplaceholder.typicode.com/users")
   "thumbnailUrl": "https://via.placeholder.com/150/d32776"
 },
 Дополнительно сделать, чтобы по нажатию на картинку картинка увеличивалась в размерах, повторное нажатие вернет картинку к исходному размеру. Вывести в html внутри div с id = 3*/
+
+async function getUserPhotos() {
+  const res = await fetch(
+    "https://jsonplaceholder.typicode.com/albums/1/photos"
+  );
+  const result = await res.json();
+  result.forEach((i) => createAlbom(i));
+}
+
+function createAlbom(object) {
+  let card = `
+    <img src="${object.url}" class="img-fluid w-25 p-3" alt="...">
+    `;
+  let cardDiv = document.createElement("div");
+  cardDiv.innerHTML = card;
+  document.body.append(cardDiv);
+  cardDiv.addEventListener("click", function (event, element) {
+    if (event.target.className === "img-fluid w-25 p-3") {
+      event.target.className = "rounded mx-auto d-block w-90 p-3";
+    } else if ("rounded mx-auto d-block w-90 p-3") {
+      event.target.className = "img-fluid w-25 p-3";
+    }
+  });
+}
+
+getUserPhotos();
